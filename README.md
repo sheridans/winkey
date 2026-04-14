@@ -1,5 +1,7 @@
 # winkey
 
+[![CI](https://github.com/sheridans/winkey/actions/workflows/ci.yml/badge.svg)](https://github.com/sheridans/winkey/actions/workflows/ci.yml)
+
 Extract the Windows product key from UEFI/BIOS firmware.
 
 OEMs embed Windows licence keys in the ACPI MSDM table for activation. This tool reads that table and prints the key. Useful when setting up a Windows VM on Linux where the host already has a valid OEM licence baked into firmware.
