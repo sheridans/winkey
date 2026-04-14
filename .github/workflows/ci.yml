@@ -1,0 +1,43 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+env:
+  CARGO_TERM_COLOR: always
+
+jobs:
+  check:
+    name: Check (${{ matrix.os }})
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os: [ubuntu-latest, windows-latest]
+    steps:
+      - uses: actions/checkout@v5
+      - name: Install Rust
+        if: runner.os == 'Linux'
+        run: |
+          if ! command -v rustup &> /dev/null; then
+            curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y --default-toolchain stable
+            . "$HOME/.cargo/env"
+          fi
+          rustup component add clippy rustfmt
+          echo "$HOME/.cargo/bin" >> $GITHUB_PATH
+      - name: Install Rust (Windows)
+        if: runner.os == 'Windows'
+        run: |
+          rustup toolchain install stable --profile default
+          rustup default stable
+          rustup component add clippy rustfmt
+      - run: cargo fmt --check
+        shell: bash
+      - run: cargo clippy -- -D warnings
+        shell: bash
+      - run: cargo test
+        shell: bash
+      - run: cargo build --release
+        shell: bash
